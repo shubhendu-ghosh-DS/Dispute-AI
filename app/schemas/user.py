@@ -9,7 +9,7 @@ class UserLogin(BaseModel):
     password: str
 
 class UserResponse(BaseModel):
-    id: int
+    user_id: int
     email: EmailStr
 
     class Config:

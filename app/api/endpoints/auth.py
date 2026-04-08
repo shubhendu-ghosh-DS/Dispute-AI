@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.schemas.user import UserCreate, UserLogin, UserResponse
+from schemas.user import UserCreate, UserLogin, UserResponse
 from services.auth_service import AuthService
-from dependencies import get_db
+from dependencies.db import get_db
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -12,19 +12,19 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     try:
         created_user, token = AuthService.signup(db, user.email, user.password)
         return {
-            "user": created_user,
-            "access_token": token
+            "user_id": created_user.id,
+            "email": created_user.email
         }
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     
 
-@router.post("/login", response_model=UserResponse)
+@router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
     try:
         authenticated_user, token = AuthService.login(db, user.email, user.password)
         return {
-            "user": authenticated_user,
+            "user_id": authenticated_user,
             "access_token": token
         }
     except ValueError as e:

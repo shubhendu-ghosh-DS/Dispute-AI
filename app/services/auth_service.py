@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from repositories.user_repo import UserRepository
-from core.security import verify_password, get_password_hash, create_access_token
+from core.security import verify_password, hash_password, create_access_token
 
 
 class AuthService:
@@ -9,7 +9,7 @@ class AuthService:
         existing_user = UserRepository.get_user_by_email(db, email)
         if existing_user:
             raise ValueError("Email already registered")
-        hashed_password = get_password_hash(password)
+        hashed_password = hash_password(password)
         user = UserRepository.create_user(db, email, hashed_password)
 
         token = create_access_token(data={"sub": user.email})
